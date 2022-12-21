@@ -1,6 +1,9 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, Response
 from models.administrador import Lista
 from utils.db import db
+import bson
+from bson import json_util
+#from controller.c_admins import *
 
 administradores = Blueprint("administradores", __name__)
 
@@ -10,12 +13,12 @@ def index():
     return "Lista index"
 
 @administradores.route("/registroadmin", methods=["POST"])
-def add_admin():
+def ruta_add_admin():
     from app import create_database
-    user = request.form["user"]
-    password = request.form["password"]
-    data_base = request.form["data_base"]
-
+    user = request.json["username"]
+    password = request.json["password"]
+    data_base = request.json["base_datos"]
+    print('recibio los datos')
     new_administrador = Lista(user, password, data_base)
 
     db.session.add(new_administrador)
@@ -24,10 +27,16 @@ def add_admin():
 
     create_database(data_base,user)
 
-    return f'Admin {user} creado con su base de datos {data_base} y las tablas'
+    response = {
+                    "status": 200,
+                    "mensaje": f'Admin {user} creado con su base de datos {data_base} y las tablas'
+                } 
+    response = json_util.dumps(response)
+    return Response(response , mimetype="application/json"),{"Access-Control-Allow-Origin": "*"}
 
-@administradores.route("/administradores")
-def update():
+@administradores.route("/login")
+def ruta_login():
+
     return "update a contact"
 
 @administradores.route("/administradores/<id>")
