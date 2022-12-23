@@ -24,7 +24,7 @@ def ruta_add_admin():
 
     password_encriptado = string_a_byte(password)
     password_encriptado = encriptar(password_encriptado)
-    
+    print(type(password_encriptado))
     new_administrador = Lista(user, password_encriptado, data_base)
 
     db.session.add(new_administrador)
@@ -61,7 +61,7 @@ def ruta_login():
         print('validacion →',validacion_usuario)
         print('acabo la validacion')
         if validacion_usuario:#el usuario existe
-            print('Entro a validar la contraseña')
+            """print('Entro a validar la contraseña')
             password_encryptado = encriptar(password)
             print('password_encryptado → ',password_encryptado)
             contra_byte = byte_a_string(password_encryptado)
@@ -79,7 +79,10 @@ def ruta_login():
                 response = {
                     "status": 200,
                     "mensaje": "La contraseña no es la correcta " 
-                }
+            }"""
+            response = {
+                    "status": 200,
+                    "mensaje": "Bienvenido "+user}   
         else:
             response = {
                     "status": 200,
