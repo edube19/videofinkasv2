@@ -429,6 +429,11 @@ def string_a_byte(palabra):#en string
     palabra = str.encode(palabra)
     return palabra
 
+def encriptar(password):#en encriptar
+    hashed = bcrypt.hashpw(password, bcrypt.gensalt())
+    print(type(hashed))
+    return hashed
+
 #PRUEBAS        
 def prueba():
     #PONER LA FUNCION A PROBAR Y DESCOMENTAR LA ULTIMA LINEA

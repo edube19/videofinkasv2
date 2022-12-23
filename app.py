@@ -1,10 +1,12 @@
-from flask import Flask
+from flask import Flask,Response
+import bson
+from bson import json_util
 from routes.administradores import administradores
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 #from sqlalchemy.ext.declarative import declarative_base
 from base import Base
-
+from conexion.conexion import conexion,consulta_login
 from sqlalchemy.orm import sessionmaker
 from models.finca import Finca
 from models.propiedad import Propiedad
@@ -30,7 +32,8 @@ def create_database(admin_name,user):
     # Crea la base de datos "admin1_db"
     engine.execute(f"CREATE DATABASE {admin_name}")
     # Crea una conexión a la base de datos para el administrador especificado
-    engine = create_engine(f'mysql://root:admin@localhost/{admin_name}')
+    #engine = create_engine(f'mysql://root:admin@localhost/{admin_name}')
+    engine = conexion(admin_name)
     # Crea la tabla en la base de datos
     Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine)
@@ -48,6 +51,14 @@ def create_database(admin_name,user):
     session.add(new_recibo_subseccion)
     session.add(new_recibos)
     session.commit()
+    #consulta(admin_name,'finca')
     
     return f'SE CREARON LAS TABLAS DEL ADMINISTRADOR {user}'
 
+def validar_usuario(usuario,password):#login o para registrar
+    validacion = False
+    try:
+        validacion = consulta_login(usuario,password)
+    except Exception as e:
+        print('Error en la funcion validar usuario → ', str(e))
+    return validacion
