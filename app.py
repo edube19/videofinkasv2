@@ -58,7 +58,8 @@ def create_database(admin_name,user):
 def validar_usuario(usuario,password):#login o para registrar
     validacion = False
     try:
-        validacion = consulta_login(usuario,password)
+        validacion,bd_encriptado = consulta_login(usuario,password)
+        return validacion,bd_encriptado
     except Exception as e:
         print('Error en la funcion validar usuario → ', str(e))
-    return validacion
+        return validacion

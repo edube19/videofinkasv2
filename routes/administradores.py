@@ -57,7 +57,7 @@ def ruta_login():
                 "mensaje":"Ingrese la contraseña"}
             return response
         print('entro a validar')
-        validacion_usuario= validar_usuario(user,password)
+        validacion_usuario,bd_encriptado= validar_usuario(user,password)
         print('validacion →',validacion_usuario)
         print('acabo la validacion')
         if validacion_usuario:#el usuario existe
@@ -82,6 +82,7 @@ def ruta_login():
             }"""
             response = {
                     "status": 200,
+                    "bd_encriptado": bd_encriptado,
                     "mensaje": "Bienvenido "+user}   
         else:
             response = {

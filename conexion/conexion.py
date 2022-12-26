@@ -19,36 +19,28 @@ def consulta_login(usuario,password):
     query = (select([table]).where(table.columns.user == usuario))
     # Ejecuta la consulta y obtiene el resultado
     result = engine.execute(query).fetchall()
-    print(result)
+    #print(type(result)) #es una lista
     if result != '':
         for row in result:
-            usuario_valor = row.user
-            print('usuario_valor → ',usuario_valor)
+            nombrebd_valor = row.data_base
             contra_valor = row.password
-            print('contra_valor → ',contra_valor)
-            print('contra valor type → ',contra_valor)
+        print('Nombre de la BD → ',nombrebd_valor)
+        bd_encriptado = set_password(nombrebd_valor)
+        print('BD encriptado → ',bd_encriptado)
+        #print(type(bd_encriptado))
 
-        print('Contra ingresada → ',password)
-        print('Contra ingresada tipo → ',type(password))
         password_encriptado = string_a_byte(contra_valor)
-        print('password_encriptado → ',password_encriptado)
+        #print('password_encriptado → ',password_encriptado)
         #password_encriptado = byte_a_string(contra_valor)
-        print('password_encriptado → ',password.encode('utf-8'))
+        #print('password_encriptado → ',password.encode('utf-8'))
         if bcrypt.checkpw(password.encode('utf-8'), password_encriptado):
             print('las contraseñas coinciden!!')
-            print('password ingresado → ',password)
-            print('password leido de la BD→ ',password_encriptado)
-            return True
+            return True,bd_encriptado
         else:
             return False
-        
-        #password_encriptado = string_a_byte(password)
-        #password_encriptado = encriptar(password_encriptado)
-        #password = set_password(password)
-        #print('password_encriptado → ',password_encriptado)
     else : return False
 
 def set_password(pw):
-    pwhash = bcrypt.hashpw(pw.encode('utf8'), bcrypt.gensalt())
-    password_hash = pwhash.decode('utf8') # decode the hash to prevent is encoded twice
+    pwhash = bcrypt.hashpw(pw.encode('utf-8'), bcrypt.gensalt())
+    password_hash = pwhash.decode('utf-8') # decode the hash to prevent is encoded twice
     return password_hash
