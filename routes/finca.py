@@ -1,11 +1,13 @@
-from __main__ import app
 from flask import jsonify, request, Response,Blueprint
 from re_excel import *
 from bson import json_util
 from controller.c_finca import *
 from utils.db import db
+from conexion.conexion import obtener_bd
 
-@app.route("/finca", methods=["GET"])#F1 FUNCIONA EN POSTMAN
+finca = Blueprint("finca", __name__)
+
+@finca.route("/finca", methods=["GET"])#F1 FUNCIONA EN POSTMAN
 def ruta_listar_finca():
     response =listar_finca()
     return Response(response, mimetype="application/json"),{"Access-Control-Allow-Origin": "*"}
@@ -15,23 +17,28 @@ def ruta_eliminar_finca():
     response = eliminar_finca()
     return Response(response , mimetype="application/json"),{"Access-Control-Allow-Origin": "*"}
 """
-@app.route("/finca", methods=["DELETE"])#F3 IMPLEMENTADO
+@finca.route("/finca", methods=["DELETE"])#F3 IMPLEMENTADO
 def ruta_eliminar_finca_ID():
     response = eliminar_finca_ID()
     return Response(response , mimetype="application/json"),{"Access-Control-Allow-Origin": "*"}
 
-@app.route("/finca/<id>", methods=["GET"])#F4 NO ES NECESARIO
+@finca.route("/finca/<id>", methods=["GET"])#F4 NO ES NECESARIO
 def ruta_listar_finca_ID(id):
     response = listar_finca_ID(id)
     return Response(response , mimetype="application/json"),{"Access-Control-Allow-Origin": "*"}
 
-@app.route("/finca", methods=["POST"])#YA FUNCIONA EN EL POSTMAN
+@finca.route("/finca", methods=["POST"])#YA FUNCIONA EN EL POSTMAN
 def ruta_crear_finca():
-    response = crear_finca()
+    usuario = request.json["user"]
+    base_datos,Admin_Id = obtener_bd(usuario)
+    Admin_Id = "7"
+    Direccion = request.json["Direccion"]
+    Nombre = request.json["Nombre"]
+    response = crear_finca(base_datos,Admin_Id,Direccion,Nombre)
     response = json_util.dumps(response)
     return Response(response , mimetype="application/json"),{"Access-Control-Allow-Origin": "*"}
 
-@app.route("/finca", methods=["PUT"])#P6
+@finca.route("/finca", methods=["PUT"])#P6
 def ruta_actualizar_finca_ID():#funciona
     response = actualizar_finca_ID()
     return Response(response , mimetype="application/json"),{"Access-Control-Allow-Origin": "*"}

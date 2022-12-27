@@ -46,6 +46,8 @@ def ruta_login():
         from app import validar_usuario
         user = request.json["username"]
         password = request.json["password"]
+        print(user)
+        print(password)
         if not user:
                 response = {
                     "status": 201,
@@ -57,32 +59,13 @@ def ruta_login():
                 "mensaje":"Ingrese la contraseña"}
             return response
         print('entro a validar')
-        validacion_usuario,bd_encriptado= validar_usuario(user,password)
+        validacion_usuario,usuario_valor= validar_usuario(user,password)
         print('validacion →',validacion_usuario)
         print('acabo la validacion')
         if validacion_usuario:#el usuario existe
-            """print('Entro a validar la contraseña')
-            password_encryptado = encriptar(password)
-            print('password_encryptado → ',password_encryptado)
-            contra_byte = byte_a_string(password_encryptado)
-            print('Contra a byte → ',contra_byte)
             response = {
                     "status": 200,
-                    "mensaje": contra_byte
-                }
-            if bcrypt.checkpw(password.encode('utf-8'), contra_byte):
-                response = {
-                    "status": 200,
-                    "mensaje": "Bienvenido "+user
-                }
-            else:
-                response = {
-                    "status": 200,
-                    "mensaje": "La contraseña no es la correcta " 
-            }"""
-            response = {
-                    "status": 200,
-                    "bd_encriptado": bd_encriptado,
+                    "usario": usuario_valor,
                     "mensaje": "Bienvenido "+user}   
         else:
             response = {
