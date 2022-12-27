@@ -1,5 +1,7 @@
 from base import Base
-from sqlalchemy import Column,Integer,String
+from sqlalchemy import Column,Integer,String,ForeignKey
+from sqlalchemy.orm import relationship
+from models.propiedad import Propiedad
 
 class Propietarios(Base):
     __tablename__ = "propietarios"
@@ -12,6 +14,9 @@ class Propietarios(Base):
     fecha_creacion = Column(String(45))
     fecha_modificacion = Column(String(45))
     estado = Column(String(45),nullable=False,unique=False)
+    #idpropiedad = Column(Integer, ForeignKey('idpropiedad'),nullable=False)
+    #propiedad = relationship("Propiedad",back_populates="propietarios")
+
     def __init__(self, nombres_y_apellidos, tipodocumento,nro_documento,correo,telefono,fecha_creacion,fecha_modificacion,estado):
         self.nombres_y_apellidos = nombres_y_apellidos
         self.tipodocumento = tipodocumento
@@ -21,3 +26,5 @@ class Propietarios(Base):
         self.fecha_creacion = fecha_creacion
         self.fecha_modificacion = fecha_modificacion
         self.estado = estado
+
+#Propiedad.propietarios = relationship ("Propietarios", order_by=Propietarios.idpropietarios,back_populates="propiedad")
