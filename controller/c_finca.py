@@ -2,17 +2,28 @@ from flask import jsonify, request
 from re_excel import *
 from bson import json_util
 from bson.objectid import ObjectId
-from libs.database import conexion
+#from libs.database import conexion
+from conexion.conexion import conexion
+from models.finca import Finca
+from sqlalchemy import create_engine, MetaData, Table,select
+from sqlalchemy.orm import sessionmaker
 
 #LISTAR
 def listar_finca():#F1
+    base_datos = 'isabelbd'
     try:
-        finca = conexion('finca').find()
-        response = json_util.dumps(finca)
+        engine = conexion(base_datos)
+        Session = sessionmaker(bind= engine)
+        #finca = conexion('finca').find()
+        session = Session()
+        respuesta = session.query(Finca).all()
+        print(respuesta)
+        
+        response = ""
         return response
     except Exception as e:
         print(e)
-        response =  json_util.dumps({"status":500, 'message':'Sucedio un error al conseguir datos de la finca → '+e})
+        response =  json_util.dumps({"status":500, 'message':'Sucedio un error al conseguir datos de la finca → '+str(e)})
         return response
 
 #ELIMINAR
@@ -34,19 +45,33 @@ def listar_finca_ID(id):#F4
     response = json_util.dumps(plantilla)
     return response
 
-def crear_finca():
+def crear_finca(base_datos,Admin_Id,Direccion,Nombre):
+    
     try:
-        Admin_Id = request.json["Admin_Id"]
-        Direccion = request.json["Direccion"]
-        Nombre = request.json["Nombre"]
+        print('entro a crear finca')
+        engine = conexion(base_datos)#conectarme a la BD del usuario
+        metadata = MetaData()
+        table = Table('finca', metadata, autoload=True, autoload_with=engine)
+        print('conecto con la BD del usuario → ',base_datos)
         if Admin_Id or Direccion or Nombre:
             modificacion = ''
             _id = generar_id()
             now = agregar_fecha()
-            db = conexion('finca')
-            total_porc_participacion = 0
-            db.insert_one({ "_id":_id,"Admin_Id":Admin_Id,"Direccion":Direccion, "Nombre":Nombre, "Fecha_creacion":now,"Fecha_modificacion":modificacion,"Total_porc_participacion":total_porc_participacion})
+            #db = conexion('finca')
+            porc_participacion = 0
+            #db.insert_one({ "_id":_id,"Admin_Id":Admin_Id,"Direccion":Direccion, "Nombre":Nombre, "Fecha_creacion":now,"Fecha_modificacion":modificacion,"Total_porc_participacion":total_porc_participacion})
             #print('RESPUESTA',respuesta)
+            new_finca = Finca(admin_id=Admin_Id, 
+            direccion=Direccion,
+            nombre=Nombre,
+            fecha_creacion=now,
+            fecha_modificacion=modificacion,
+            total_porc_participacion=porc_participacion)
+            Session = sessionmaker(bind=engine)
+            session = Session()
+            session.add(new_finca)
+            r = session.commit()
+            print('RESPUESTA DEL SESSION COMMIT',r)
             response = {
                 "status": 201,
                 "_id":     _id,
@@ -54,12 +79,19 @@ def crear_finca():
                 "Direccion":Direccion,
                 "Nombre":Nombre,
                 "Fecha_creacion": now,
-                "Total_porc_participacion":total_porc_participacion,
+                "Total_porc_participacion":porc_participacion,
                 "mensaje" : 'Se registro satisfactoriamente la finca '+Nombre
             }
-            return response
-        else:
-            return not_found('No se registro')
+            #busqeuda = (select([table]))
+            #busqeuda = session.query(Finca).all()
+            #print('BUSQUEDA',busqeuda)
+            #result = engine.execute(busqeuda).fetchall()
+            #print(type(result)) #es una lista
+    
+            #for row in result:
+                #print(row)
+            #else:
+                #return not_found('No se registro')
     except Exception as e:
         response = {
                 "status": 500,
