@@ -2,6 +2,9 @@ from flask import Flask,Response
 import bson
 from bson import json_util
 from routes.administradores import administradores
+from routes.finca import finca
+from routes.propietarios import propietarios
+
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 #from sqlalchemy.ext.declarative import declarative_base
@@ -22,7 +25,8 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 SQLAlchemy(app)
 
 app.register_blueprint(administradores)
-
+app.register_blueprint(finca)
+app.register_blueprint(propietarios)
 # Declara una clase base para las tablas
 #Base = declarative_base()
 
@@ -57,9 +61,10 @@ def create_database(admin_name,user):
 
 def validar_usuario(usuario,password):#login o para registrar
     validacion = False
+    print('ENTRO A LA FUNCION VALIDAR USUARIO')
     try:
-        validacion,bd_encriptado = consulta_login(usuario,password)
-        return validacion,bd_encriptado
+        validacion,usuario_valor = consulta_login(usuario,password)
+        return validacion,usuario_valor
     except Exception as e:
         print('Error en la funcion validar usuario → ', str(e))
         return validacion
