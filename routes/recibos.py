@@ -1,6 +1,6 @@
 from __main__ import app
 from flask import jsonify, request, Response
-from re_excel import *
+from recursos.re_excel import *
 from controller.c_recibos import *
 #RECIBOS PARA ESTACIONAMIENTO Y DEPARTAMENTO, PONERLE POR TIPO
 
