@@ -42,7 +42,7 @@ def create_database(admin_name,user):
     Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine)
     session = Session()
-    new_finca = Finca(admin_id=1, direccion="los girasoles",nombre="edificio1",fecha_creacion='19/12/2022',fecha_modificacion="",total_porc_participacion=5.8)
+    new_finca = Finca( direccion="los girasoles",nombre="edificio1",fecha_creacion='19/12/2022',fecha_modificacion="",total_porc_participacion=5.8)
     new_propiedad = Propiedad(tipo_propietario=1,porcentaje_participacion="5",numero_deposito="",numero_departamento="7",numero_estacionamiento="3")
     new_propietarios = Propietarios(nombres_y_apellidos="eduardo berrios",tipodocumento="D",nro_documento="75771492",correo="edujor2@gmail.com",telefono=3547599,fecha_creacion='19/12/2022',fecha_modificacion="",estado="A")
     new_recibo_seccion = Recibo_seccion(descripcion="seccion1")
@@ -61,7 +61,6 @@ def create_database(admin_name,user):
 
 def validar_usuario(usuario,password):#login o para registrar
     validacion = False
-    print('ENTRO A LA FUNCION VALIDAR USUARIO')
     try:
         validacion,usuario_valor = consulta_login(usuario,password)
         return validacion,usuario_valor
