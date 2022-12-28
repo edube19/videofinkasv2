@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request, Response,send_file
-from re_excel import *
+from recursos.re_excel import *
 from bson import json_util
-from libs.database import conexion
+
 from bson.objectid import ObjectId
 #LISTAR
 def listar_propietario():
@@ -16,7 +16,7 @@ def listar_propietario_ID(id):#P4
     return response
 
 #REGISTRAR
-def registrar_propietario():#P2
+def registrar_propietario(base_datos,datos_propietarios):#P2
     duplicado_ID_Departamentos = ""
     duplicado_Numero_Estacionamiento = ""
     duplicado_Numero_Deposito = ""
@@ -34,7 +34,19 @@ def registrar_propietario():#P2
     #caso los tres campos sean invalidos
     repite_todo = False
     try:
-        ID_Departamentos = request.json["Departamentos"][0]['ID_Departamentos']#validar que no se repita
+        #propiedad
+        porcentaje_participacion = datos_propietarios[0]
+        Numero_deposito = datos_propietarios[1]
+        ID_Departamentos = datos_propietarios[2]
+        Numero_Estacionamiento = datos_propietarios[3]
+        #propietarios
+        Nombres_y_Apellidos = datos_propietarios[4]
+        Tipo_Documento = datos_propietarios[5]
+        Nro_Documento = datos_propietarios[6]
+        Correo = datos_propietarios[7]
+        Telefono = datos_propietarios[8]
+
+        """ID_Departamentos = datos_propietarios[2]#validar que no se repita
         _id = request.json["_id"]
         Finca = request.json["Finca"]
         Nombres_y_Apellidos = request.json["Nombres_y_Apellidos"]
@@ -48,7 +60,7 @@ def registrar_propietario():#P2
         Estacionamientos = request.json["Estacionamientos"]
         Numero_Estacionamiento = request.json["Estacionamientos"][0]['Numero_Estacionamiento']#validar que no se repita
         estado = 'A'#activo por defecto
-        Numero_deposito = request.json["Numero_deposito"]
+        Numero_deposito = request.json["Numero_deposito"]"""
         validacion_departamento = False
         validacion_estacionamiento = False
         validacion_deposito = False
@@ -60,7 +72,7 @@ def registrar_propietario():#P2
         #caso 1
         if ID_Departamentos != "" and Numero_Estacionamiento!="" and Numero_deposito!="":#puso tanto departamento como estacionamiento
             #con esta condicional ya se asegura que ninguno de esos campos estan vacios
-            validacion_departamento = validar_id_departamento(ID_Departamentos,Finca,"A")
+            validacion_departamento = validar_id_departamento(ID_Departamentos,base_datos,"A",Nombres_y_Apellidos)
             validacion_estacionamiento = validar_id_estacionamiento(Numero_Estacionamiento,Finca,"A")
             validacion_deposito = validar_id_deposito(Numero_deposito,Finca,"A")
             validacion_general = True

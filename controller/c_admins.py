@@ -1,49 +1,41 @@
-from flask import jsonify, request
+from flask import jsonify, request,Response
 #from re_excel import *
 from bson import json_util
 from bson.objectid import ObjectId
-from libs.database import conexion,conexionv2
-import bcrypt
+#from libs.database import conexion,conexionv2
 from models.administrador import Lista
 from utils.db import db
+from conexion.conexion import string_a_byte,conexion
+from recursos.re_encriptacion import *
 
 def login():
     try:
-        user = request.json["user"]
+        from app import validar_usuario
+        user = request.json["username"]
         password = request.json["password"]
-        #en caso no se llene algun campo
         if not user:
-            response = {
-                "status": 201,
-                "mensaje":"Ingrese un usuario"}
-            return response
+                response = {
+                    "status": 201,
+                    "mensaje":"Ingrese un usuario"}
+                return response
         if not password:
             response = {
                 "status": 201,
                 "mensaje":"Ingrese la contraseña"}
             return response
-        #valida si el usuario existe (true existe, false no existe)
-        validacion_usuario,json = validar_usuario(user)
+        validacion_usuario,usuario_valor= validar_usuario(user,password)
         if validacion_usuario:#el usuario existe
-            contra = json[0]['password']
-            contra_byte = string_a_byte(contra)
-            if bcrypt.checkpw(password.encode('utf-8'), contra_byte):
-                response = {
-                    "status": 200,
-                    "mensaje": "Bienvenido "+user
-                }
-            else:
-                response = {
-                    "status": 200,
-                    "mensaje": "La contraseña no es la correcta " 
-                }
-        else:
             response = {
                     "status": 200,
-                    "mensaje": "El administrador "+user+" no existe" 
-                }
-            return response
-        return response
+                    "usuario": user,
+                    "mensaje": "Bienvenido "+user}   
+        else:
+            if usuario_valor == '':
+                response = {
+                        "status": 200,
+                        "mensaje": "El administrador "+user+" no existe" 
+                    }
+        return json_util.dumps(response)
     except Exception as e:
         # the rollback func reverts the changes made to the db ( so if an error happens after we commited changes they will be reverted )
         print('SUCEDIO UN ERROR AL LOGEAR >>> ',e)
@@ -53,29 +45,31 @@ def login():
 def registrar():
 
     try:
-        user = request.json["user"]
+        from app import create_database
+        user = request.json["username"]
         password = request.json["password"]
-        #en caso no se llene algun campo
-        if not user:
-            response = {
-                "status": 201,
-                "mensaje":"Ingrese un usuario"}
-            return response
-        if not password:
-            response = {
-                "status": 201,
-                "mensaje":"Ingrese una contraseña"}
-            return response
-        validacion_usuario,json = validar_usuario(user,'registrar')
-        if validacion_usuario:
-            base_datos = request.json["bd"]
-            db = conexion('administradores')
-            fecha = datetime.now()
-            db.insert_one(
-                { "user":user,"password":password,"bd":base_datos,"Fecha_creacion":fecha})
+        data_base = request.json["base_datos"]
+
+        password_encriptado = string_a_byte(password)
+        password_encriptado = encriptar(password_encriptado)
+        new_administrador = Lista(user, password_encriptado, data_base)
+        db.session.add(new_administrador)
+        db.session.commit() 
+
+        create_database(data_base,user)
+        print('admin creado')
+        response = {
+                        "status": 200,
+                        "mensaje": f'Admin {user} creado con su base de datos {data_base} y las tablas'
+                    } 
+        response = json_util.dumps(response)
+        return Response(response , mimetype="application/json"),{"Access-Control-Allow-Origin": "*"}
     except Exception as e:
-        print('SUCEDIO UN ERROR AL REGISTRAR >>> ',e)
-        response = {"status":400,'mensaje': 'Hubo un error en el registro de administradores >>> '+str(e)}
+        print('Error al registrar administrador → '+str(e))
+        response = {
+                        "status": 400,
+                        "mensaje": 'Error al registrar administrador → '+str(e)
+                    } 
         return response
 
 

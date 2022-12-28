@@ -1,7 +1,6 @@
 from flask import jsonify, request, Response
-from re_excel import *
+from recursos.re_excel import *
 from bson import json_util
-from libs.database import conexion
 from consolidado import generar_doc_finca
 import json
 
