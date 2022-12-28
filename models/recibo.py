@@ -30,3 +30,5 @@ class Recibos(Base):
         self.mes = mes
         self.nombre = nombre
         self.fecha_modificacion = fecha_modificacion
+    def to_dict(self):
+        return {'id': self.idrecibos,'year': self.year, 'mes':self.mes,'nombre': self.nombre,'fecha_modificacion': self.fecha_modificacion}

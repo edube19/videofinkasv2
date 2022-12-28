@@ -1,5 +1,5 @@
 from base import Base
-from sqlalchemy import Column,Integer,String,Float,ForeignKey
+from sqlalchemy import Column,Integer,String,ForeignKey
 from sqlalchemy.orm import relationship,backref
 class Recibo_seccion(Base):
     __tablename__ = "recibo_seccion"
@@ -18,3 +18,5 @@ class Recibo_seccion(Base):
     
     def __init__(self, descripcion):
         self.descripcion = descripcion
+    def to_dict(self):
+        return {'id': self.idseccion,'descripcion': self.descripcion}

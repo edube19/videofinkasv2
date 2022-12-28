@@ -32,3 +32,7 @@ class Propiedad(Base):
         self.numero_deposito = numero_deposito
         self.numero_departamento = numero_departamento
         self.numero_estacionamiento = numero_estacionamiento
+
+    def to_dict(self):
+        return {'id': self.idpropiedad,'tipo_propietario': self.tipo_propietario, 'porcentaje_participacion': self.porcentaje_participacion,
+        'numero_deposito': self.numero_deposito,'numero_departamento': self.numero_departamento,'numero_estacionamiento': self.numero_estacionamiento}

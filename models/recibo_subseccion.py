@@ -18,3 +18,5 @@ class Recibo_subseccion(Base):
         self.nombre = nombre
         self.monto = monto
         self.descripcion = descripcion
+    def to_dict(self):
+        return {'id': self.id_subseccion,'nombre': self.nombre,'monto': self.monto,'descripcion': self.descripcion}

@@ -11,3 +11,5 @@ class Lista(db.Model):
         self.user = user
         self.password = password
         self.data_base = data_base
+    def to_dict(self):
+        return {'id': self.id,'user': self.user, 'password': self.password,'data_base': self.data_base}
