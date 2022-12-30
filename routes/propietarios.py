@@ -7,7 +7,7 @@ from conexion.conexion import obtener_bd
 propietarios = Blueprint("propietarios", __name__)
 #ACTUALZIAR ESTO!!!1
 
-@propietarios.route("/propietarios", methods=["GET"])#P1 listo
+@propietarios.route("/listar_propietarios", methods=["POST"])#P1 listo
 def ruta_listar_propietario():
     response = listar_propietario()
     return Response(response, mimetype="application/json"),{"Access-Control-Allow-Origin": "*"}
@@ -15,31 +15,39 @@ def ruta_listar_propietario():
 @propietarios.route("/propietario", methods=["POST"])#P2 listo
 def ruta_registrar_propietario():
     usuario = request.json["user"]
-    base_datos,Admin_Id = obtener_bd(usuario)
-    datos_propietario = []
-    #tabla propiedad
-    Porcentaje_Participacion = request.json["porcentaje_participacion"]
-    datos_propietario[0]= Porcentaje_Participacion
-    Numero_deposito = request.json["numero_deposito"]
-    datos_propietario[1]= Numero_deposito
-    Numero_departamento = request.json["numero_departamento"]
-    datos_propietario[2]= Numero_departamento
-    Numero_Estacionamiento = request.json["numero_estacionamiento"]
-    datos_propietario[3]= Numero_Estacionamiento
+    base_datos,engine = obtener_bd(usuario)
 
-    #propietarios
-    Nombres_y_Apellidos = request.json["nombres_y_apellidos"]
-    datos_propietario[4]= Nombres_y_Apellidos
-    Tipo_Documento = request.json["tipodocumento"]
-    datos_propietario[5]= Tipo_Documento
-    Nro_Documento = request.json["nro_documento"]
-    datos_propietario[6]= Nro_Documento
-    Correo = request.json["correo"]
-    datos_propietario[7]= Correo
-    Telefono = request.json["telefono"]
-    datos_propietario[8]= Telefono
+    lista_json =  {
+        "nombres_y_apellidos": request.json["nombres_y_apellidos"],"tipodocumento": request.json["tipodocumento"],
+        "nro_documento": request.json["nro_documento"],"correo": request.json["correo"],"telefono": request.json["telefono"],
+        "estado": 'A',"numero_deposito":request.json["numero_deposito"],"numero_departamento":request.json["numero_departamento"],
+        "numero_estacionamiento": request.json["numero_estacionamiento"]
+    }
 
-    response = registrar_propietario(base_datos,datos_propietario)
+    [
+    {
+        "idpropiedad": 1,
+        "tipo_propietario": 1,
+        "porcentaje_participacion":'5',
+        "numero_deposito":'',
+        "numero_departamento":'7',
+        "numero_estacionamiento":'3',
+        "propietario_id": 1,
+        "finca_id": 1,
+        "idpropietarios": 1,
+        "Nombre y Apellidos":'eduardo berrios',
+        "tipodocumento":'D',
+        "nro_documento":'75771492',
+        "correo":'edujor2@gmail.com',
+        "telefono": 3547599,
+        "fecha_creacion":'19/12/2022',
+        "fecha_modificacion":'',
+        "estado":'A'}]
+
+
+
+
+    response = registrar_propietario(base_datos,lista_json)
     response = json_util.dumps(response)
     return Response(response , mimetype="application/json"),{"Access-Control-Allow-Origin": "*"}
 
