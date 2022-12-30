@@ -12,35 +12,35 @@ def listar_propietario():
     base_datos = obtener_bd()
     #base_datos = 'albertobd'
     session,engine=get_sesion(base_datos)
-    """stmt = (
-    select(Propiedad)
-    .join(Propiedad.idpropietario))
-    listado = session.scalars(stmt).all()"""
-    respuesta = session.query(Propiedad,Propietarios).join(Propietarios).all()#es una lista
-    result = [
-     {
-          "idpropiedad": x.idpropiedad, 
-          "tipo_propietario": x.tipo_propietario, 
-          "porcentaje_participacion": x.porcentaje_participacion, 
-          "numero_deposito":x.numero_deposito,
-          "numero_departamento":x.numero_departamento,
-          "numero_estacionamiento":x.numero_estacionamiento,
-          "finca_id":x.finca_id,
-          "idpropietarios": y.idpropietarios, 
-          "nombres_y_apellidos": y.nombres_y_apellidos,
-          "tipodocumento":y.tipodocumento,
-          "nro_documento": y.nro_documento, 
-          "correo": y.correo,
-          "telefono":y.telefono,
-          "estado": y.estado
-     } 
-     for x,y in respuesta]#x → Propiedad , y → Propietarios, esto es una lista
-    print(type(result))
-    # Convert the list to JSON format
-    json_result = json_util.dumps(result)
-    #print('RESULTADO → ',json.loads(json_result))
-    print('RESULTADO → ', json_result)
-    return json_result
+    #id_buscar = 2
+    try:
+        respuesta = session.query(Propiedad,Propietarios).join(Propietarios).all()#es una lista
+        #respuesta = session.query(Propiedad,Propietarios).join(Propietarios).filter(Propietarios.idpropietarios == id_buscar).all()#es una lista
+        result = [
+        {
+            "idpropiedad": x.idpropiedad, 
+            "tipo_propietario": x.tipo_propietario, 
+            "porcentaje_participacion": x.porcentaje_participacion, 
+            "numero_deposito":x.numero_deposito,
+            "numero_departamento":x.numero_departamento,
+            "numero_estacionamiento":x.numero_estacionamiento,
+            "finca_id":x.finca_id,
+            "idpropietarios": y.idpropietarios, 
+            "nombres_y_apellidos": y.nombres_y_apellidos,
+            "tipodocumento":y.tipodocumento,
+            "nro_documento": y.nro_documento, 
+            "correo": y.correo,
+            "telefono":y.telefono,
+            "estado": y.estado
+        } 
+        for x,y in respuesta]#x → Propiedad , y → Propietarios, esto es una lista
+        # Convert the list to JSON format
+        json_result = json_util.dumps(result)
+        return json_result
+    except Exception as e:
+        print('ERROR → ',e)
+        json_result = str(e)
+        return json_result 
 
 def listar_propietario_ID(id):#P4
     propietario = conexion('finca').find_one({'_id': ObjectId(id)})
@@ -72,7 +72,10 @@ def registrar_propietario(base_datos,lista_json):#P2
         nro_documento = lista_json["nro_documento"]
         correo = lista_json["correo"]
         telefono = lista_json["telefono"]
-        estado = lista_json["estado"]
+        #estado = lista_json["estado"]
+        numero_deposito = lista_json["numero_deposito"]
+        numero_departamento = lista_json["numero_departamento"]
+        numero_estacionamiento = lista_json["numero_estacionamiento"]
         """ID_Departamentos = datos_propietarios[2]#validar que no se repita
         _id = request.json["_id"]
         Finca = request.json["Finca"]
@@ -93,19 +96,20 @@ def registrar_propietario(base_datos,lista_json):#P2
         validacion_deposito = False
         #defecto tipo_prop 1 dpto y estacionamiento, en caso sea valido
         #caso 1
-        if ID_Departamentos != "" and Numero_Estacionamiento!="" and Numero_deposito!="":#puso tanto departamento como estacionamiento
+        """if ID_Departamentos != "" and Numero_Estacionamiento!="" and Numero_deposito!="":#puso tanto departamento como estacionamiento
             #con esta condicional ya se asegura que ninguno de esos campos estan vacios
             validacion_departamento = validar_id_departamento(ID_Departamentos,base_datos,"A",Nombres_y_Apellidos)
             validacion_estacionamiento = validar_id_estacionamiento(Numero_Estacionamiento,Finca,"A")
             validacion_deposito = validar_id_deposito(Numero_deposito,Finca,"A")
             validacion_general = True
             lista_validaciones = list((validacion_departamento,validacion_estacionamiento,validacion_deposito))
-            if False in lista_validaciones:
+            if False in lista_validaciones:"""
             #if validacion_departamento ==False or validacion_estacionamiento ==False or validacion_deposito ==False:
-                """duplicado_ID_Departamentos = ID_Departamentos
-                duplicado_Numero_Estacionamiento = Numero_Estacionamiento
-                duplicado_Numero_deposito = Numero_deposito"""
-                validacion_general = False
+        """duplicado_ID_Departamentos = ID_Departamentos
+            duplicado_Numero_Estacionamiento = Numero_Estacionamiento
+            duplicado_Numero_deposito = Numero_deposito"""
+
+        """validacion_general = False
                 #para ver cual es el incorrecto
                 if (validacion_departamento):#departamento esta bien
                     if(validacion_estacionamiento):#estacionamiento esta bien
@@ -161,9 +165,9 @@ def registrar_propietario(base_datos,lista_json):#P2
                         duplicado_Numero_Estacionamiento = Numero_Estacionamiento
                         duplicado_ID_Departamentos = ID_Departamentos
             else:
-                tipo_propietario = 1
+                tipo_propietario = 1"""
             #caso 2
-                """if (Numero_Estacionamiento!="" and Numero_deposito==""):
+        """if (Numero_Estacionamiento!="" and Numero_deposito==""):
                     validacion_departamento = validar_id_departamento(ID_Departamentos,Finca,"A")
                     validacion_estacionamiento = validar_id_estacionamiento(Numero_Estacionamiento,Finca,"A")
                     if validacion_departamento ==False:
@@ -187,7 +191,7 @@ def registrar_propietario(base_datos,lista_json):#P2
                     else:
                         tipo_propietario = 1
                     validacion_general = validacion_departamento"""
-        elif ID_Departamentos!="" and Numero_deposito!="":
+        """elif ID_Departamentos!="" and Numero_deposito!="":
             validacion_departamento = validar_id_departamento(ID_Departamentos,Finca,"A")
             validacion_deposito = validar_id_deposito(Numero_deposito,Finca,"A")
             validacion_general = True
@@ -257,7 +261,7 @@ def registrar_propietario(base_datos,lista_json):#P2
         else:
             validacion_general = False
             response = {"status": 201,'mensaje': 'Debe de llenar al menos un Departamento, Estacionamiento o Depósito',"error":True,"input_error":"todos"}
-            return response
+            return response"""
         """elif Numero_Estacionamiento!="":#caso 5
             if (Numero_deposito!=""):
                 validacion_estacionamiento = validar_id_estacionamiento(Numero_Estacionamiento,Finca,"A")
@@ -288,25 +292,25 @@ def registrar_propietario(base_datos,lista_json):#P2
             response = {"status": 400,'mensaje': 'Los campos de Departamento y Estacionamiento no pueden estar ambos vacios'}  
             #return response"""
 
-        if validacion_general:
-            if _id or Finca or Nombres_y_Apellidos or Tipo_Documento or Nro_Documento or Correo or Telefono or array_departamentos or Estacionamientos :
-                modificacion = ''
-                fecha = datetime.now()
-                db = conexion('propietarios')
-                db.insert_one(
-                    { "_id":_id,"Finca":Finca, "Nombres_y_Apellidos": Nombres_y_Apellidos, "Tipo_Documento": Tipo_Documento,
-                    "Nro_Documento": Nro_Documento, "Correo": Correo, "Telefono": Telefono, "Departamentos": array_departamentos,
-                    "Estacionamientos": Estacionamientos,"Fecha_creacion":fecha,"Fecha_modificacion":modificacion,"estado":estado,
-                    "tipo_propietario":tipo_propietario,"Numero_deposito":Numero_deposito})
-                response = {
-                    "status": 200,
-                    "mensaje": "El usuario "+ Nombres_y_Apellidos+ " se registro satisfactoriamente"
-                }
-                #return response
-            else:
-                response = {"status": 201,'mensaje': 'Uno o mas datos a registrar son incorrectos'}  
-                #return response
-        else:
+        #if validacion_general:
+            #if _id or Finca or Nombres_y_Apellidos or Tipo_Documento or Nro_Documento or Correo or Telefono or array_departamentos or Estacionamientos :
+        modificacion = ''
+        fecha = datetime.now()
+        db = conexion('propietarios')
+        db.insert_one(
+            { "_id":_id,"Finca":Finca, "Nombres_y_Apellidos": Nombres_y_Apellidos, "Tipo_Documento": Tipo_Documento,
+            "Nro_Documento": Nro_Documento, "Correo": Correo, "Telefono": Telefono, "Departamentos": array_departamentos,
+            "Estacionamientos": Estacionamientos,"Fecha_creacion":fecha,"Fecha_modificacion":modificacion,"estado":estado,
+            "tipo_propietario":tipo_propietario,"Numero_deposito":Numero_deposito})
+        response = {
+            "status": 200,
+            "mensaje": "El usuario "+ Nombres_y_Apellidos+ " se registro satisfactoriamente"
+        }
+        #return response
+       
+        response = {"status": 201,'mensaje': 'Uno o mas datos a registrar son incorrectos'}  
+        #return response
+        """else:
             if repite_departamento:
                 response = {"status": 201,'mensaje': 'El departamento ' + duplicado_ID_Departamentos +' ya esta siendo usado',"error":True,"input_error":"departamento"}
                 #return json_util.dumps(response)
@@ -326,7 +330,7 @@ def registrar_propietario(base_datos,lista_json):#P2
                 response = {"status": 201,'mensaje': "El departamento "+ID_Departamentos+",el estacionamiento "+Numero_Estacionamiento+" y el deposito "+Numero_deposito+" ya esta siendo usado","error":True,"input_error":"todos"}
         contar_porc_participacion(Finca,estado)
         #return json_util.dumps(response)    
-        return response
+        return response"""
     except Exception as e:
         print(e)
         response = {
@@ -334,8 +338,66 @@ def registrar_propietario(base_datos,lista_json):#P2
                 "mensaje":"Hubo error al registrar → "+str(e)}
         return response
 
+def buscar_propietario_tipo_documento():
+    base_datos = obtener_bd()
+    session,engine=get_sesion(base_datos)
+    nro_documento = request.json['nro_documento']
+    try: 
+        respuesta = session.query(Propietarios).filter(Propietarios.nro_documento == nro_documento).all()
+        result = [
+        {
+            "nombres_y_apellidos": x.nombres_y_apellidos,
+            "correo": x.correo,
+            "telefono":x.telefono
+        } 
+        for x in respuesta]
+        # Convert the list to JSON format
+        json_result = json_util.dumps(result)
+        print(json_result)
+        return json_result
+    except Exception as e:
+        print('ERROR → ',e)
+        json_result = str(e)
+        return json_result 
+
 #ACTUALIZAR
-def actualizar_propietario_ID():#P6
+def actualizar_propietario_ID():
+
+    base_datos = obtener_bd()
+    #base_datos = 'albertobd'
+    session,engine=get_sesion(base_datos)
+    id_buscar = request.json['']
+    #id_buscar = 2
+    try:
+        #respuesta = session.query(Propiedad,Propietarios).join(Propietarios).all()#es una lista
+        respuesta = session.query(Propiedad,Propietarios).join(Propietarios).filter(Propietarios.idpropietarios == id_buscar).all()#es una lista
+        result = [
+        {
+            "idpropiedad": x.idpropiedad, 
+            "tipo_propietario": x.tipo_propietario, 
+            "porcentaje_participacion": x.porcentaje_participacion, 
+            "numero_deposito":x.numero_deposito,
+            "numero_departamento":x.numero_departamento,
+            "numero_estacionamiento":x.numero_estacionamiento,
+            "finca_id":x.finca_id,
+            "idpropietarios": y.idpropietarios, 
+            "nombres_y_apellidos": y.nombres_y_apellidos,
+            "tipodocumento":y.tipodocumento,
+            "nro_documento": y.nro_documento, 
+            "correo": y.correo,
+            "telefono":y.telefono,
+            "estado": y.estado
+        } 
+        for x,y in respuesta]#x → Propiedad , y → Propietarios, esto es una lista
+        # Convert the list to JSON format
+        json_result = json_util.dumps(result)
+        return json_result
+    except Exception as e:
+        print('ERROR → ',e)
+        json_result = str(e)
+        return json_result 
+
+def actualizar_propietario_ID2():#P6
     duplicado_ID_Departamentos = ""
     duplicado_Numero_Estacionamiento = ""
     duplicado_Numero_Deposito = ""
