@@ -1,13 +1,46 @@
 from flask import Flask, jsonify, request, Response,send_file
 from recursos.re_excel import *
+from recursos.re_otros import transformar_json
 from bson import json_util
-
 from bson.objectid import ObjectId
+from conexion.conexion import *
+from models.propietarios import Propietarios
+from models.propiedad import Propiedad
+
 #LISTAR
 def listar_propietario():
-    propietarios = conexion('propietarios').find({"estado":"A"})#{"estado":"A"} → ACTIVOS , {"estado":"N"} → INACTIVOS 
-    response = json_util.dumps(propietarios)
-    return response
+    base_datos = obtener_bd()
+    #base_datos = 'albertobd'
+    session,engine=get_sesion(base_datos)
+    """stmt = (
+    select(Propiedad)
+    .join(Propiedad.idpropietario))
+    listado = session.scalars(stmt).all()"""
+    respuesta = session.query(Propiedad,Propietarios).join(Propietarios).all()#es una lista
+    result = [
+     {
+          "idpropiedad": x.idpropiedad, 
+          "tipo_propietario": x.tipo_propietario, 
+          "porcentaje_participacion": x.porcentaje_participacion, 
+          "numero_deposito":x.numero_deposito,
+          "numero_departamento":x.numero_departamento,
+          "numero_estacionamiento":x.numero_estacionamiento,
+          "finca_id":x.finca_id,
+          "idpropietarios": y.idpropietarios, 
+          "nombres_y_apellidos": y.nombres_y_apellidos,
+          "tipodocumento":y.tipodocumento,
+          "nro_documento": y.nro_documento, 
+          "correo": y.correo,
+          "telefono":y.telefono,
+          "estado": y.estado
+     } 
+     for x,y in respuesta]#x → Propiedad , y → Propietarios, esto es una lista
+    print(type(result))
+    # Convert the list to JSON format
+    json_result = json_util.dumps(result)
+    #print('RESULTADO → ',json.loads(json_result))
+    print('RESULTADO → ', json_result)
+    return json_result
 
 def listar_propietario_ID(id):#P4
     propietario = conexion('finca').find_one({'_id': ObjectId(id)})
@@ -16,7 +49,7 @@ def listar_propietario_ID(id):#P4
     return response
 
 #REGISTRAR
-def registrar_propietario(base_datos,datos_propietarios):#P2
+def registrar_propietario(base_datos,lista_json):#P2
     duplicado_ID_Departamentos = ""
     duplicado_Numero_Estacionamiento = ""
     duplicado_Numero_Deposito = ""
@@ -34,18 +67,12 @@ def registrar_propietario(base_datos,datos_propietarios):#P2
     #caso los tres campos sean invalidos
     repite_todo = False
     try:
-        #propiedad
-        porcentaje_participacion = datos_propietarios[0]
-        Numero_deposito = datos_propietarios[1]
-        ID_Departamentos = datos_propietarios[2]
-        Numero_Estacionamiento = datos_propietarios[3]
-        #propietarios
-        Nombres_y_Apellidos = datos_propietarios[4]
-        Tipo_Documento = datos_propietarios[5]
-        Nro_Documento = datos_propietarios[6]
-        Correo = datos_propietarios[7]
-        Telefono = datos_propietarios[8]
-
+        nombres_y_apellidos = lista_json["nombres_y_apellidos"]
+        tipodocumento = lista_json["tipodocumento"]
+        nro_documento = lista_json["nro_documento"]
+        correo = lista_json["correo"]
+        telefono = lista_json["telefono"]
+        estado = lista_json["estado"]
         """ID_Departamentos = datos_propietarios[2]#validar que no se repita
         _id = request.json["_id"]
         Finca = request.json["Finca"]
@@ -64,10 +91,6 @@ def registrar_propietario(base_datos,datos_propietarios):#P2
         validacion_departamento = False
         validacion_estacionamiento = False
         validacion_deposito = False
-
-        print('DEPARTAMENTO >>> ',ID_Departamentos)
-        print('ESTACIONAMIENTO >>> ',Numero_Estacionamiento)
-        print('DEPOSITO >>> ',Numero_deposito)
         #defecto tipo_prop 1 dpto y estacionamiento, en caso sea valido
         #caso 1
         if ID_Departamentos != "" and Numero_Estacionamiento!="" and Numero_deposito!="":#puso tanto departamento como estacionamiento

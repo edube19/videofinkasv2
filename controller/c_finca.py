@@ -3,24 +3,33 @@ from flask import jsonify, request
 from bson import json_util
 from bson.objectid import ObjectId
 #from libs.database import conexion
-from conexion.conexion import conexion,get_sesion
+from conexion.conexion import conexion,get_sesion,obtener_bd
 from models.finca import Finca
 from sqlalchemy import create_engine, MetaData, Table,select
 from sqlalchemy.orm import sessionmaker
 import json
 from recursos.re_otros import *
 #LISTAR
-def listar_finca(base_datos):#F1
+def listar_finca():
+    #usuario = request.json["user"]
+    #base_datos= obtener_bd(usuario)
+    base_datos = obtener_bd()
+    response =funcion_listar_finca(base_datos)
+    return response
+
+def funcion_listar_finca(base_datos):#F1
     #base_datos = 'jorgebd'
     try:
         #finca = conexion('finca').find()
         session,engine = get_sesion(base_datos)
         respuesta = session.query(Finca).all()
+        print('type',type(respuesta))
         #res = json.dumps(respuesta)
         people_dicts = [person.to_dict() for person in respuesta]
         print(people_dicts)  # Muestra una lista de diccionarios con los datos de cada persona
         r = json.dumps(people_dicts) #esto es un string
         q = json.loads(r)#esto ya es una lista
+        print(type(q))
         return json.dumps(q)
     except Exception as e:
         print(e)
