@@ -15,14 +15,15 @@ def ruta_listar_propietario():
 @propietarios.route("/propietario", methods=["POST"])#P2 listo
 def ruta_registrar_propietario():
     usuario = request.json["user"]
-    base_datos,engine = obtener_bd(usuario)
-
-    lista_json =  {
+    base_datos = get_sesion(usuario)
+    datos =  request.json# esto lo jala del postamn o del front
+    print('LECTURA DE DATOS → ',datos)
+    """lista_json =  {
         "nombres_y_apellidos": request.json["nombres_y_apellidos"],"tipodocumento": request.json["tipodocumento"],
         "nro_documento": request.json["nro_documento"],"correo": request.json["correo"],"telefono": request.json["telefono"],
         "estado": 'A',"numero_deposito":request.json["numero_deposito"],"numero_departamento":request.json["numero_departamento"],
         "numero_estacionamiento": request.json["numero_estacionamiento"]
-    }
+    }"""
 
     [
     {
@@ -43,11 +44,8 @@ def ruta_registrar_propietario():
         "fecha_creacion":'19/12/2022',
         "fecha_modificacion":'',
         "estado":'A'}]
-
-
-
-
-    response = registrar_propietario(base_datos,lista_json)
+    print('entrando a REGISTRAR PROPIETARIOS')
+    response = registrar_propietario(base_datos,datos)
     response = json_util.dumps(response)
     return Response(response , mimetype="application/json"),{"Access-Control-Allow-Origin": "*"}
 
@@ -69,6 +67,11 @@ def ruta_eliminar_propietario_ID():
 @propietarios.route("/propietarios", methods=["PUT"])#P6 falta
 def ruta_actualizar_propietario_ID():
     response = actualizar_propietario_ID()
+    return Response(response , mimetype="application/json"),{"Access-Control-Allow-Origin": "*"}
+
+@propietarios.route("/buscar_propietario", methods=["POST"])#P6 falta
+def ruta_buscar_propietario_tipo_documento():
+    response = buscar_propietario_tipo_documento()
     return Response(response , mimetype="application/json"),{"Access-Control-Allow-Origin": "*"}
 
 def not_found(error=None):
