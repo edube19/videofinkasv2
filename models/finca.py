@@ -14,6 +14,9 @@ class Finca(Base):
     fecha_modificacion= Column(String(45))
     total_porc_participacion= Column(Float(20),nullable=False)
 
+    propiedad = relationship(
+         "Propiedad", back_populates="finca", cascade="all, delete-orphan"
+    )
     #llave foranea asignada
     #llave_finca1 = relationship("Recibos", back_populates="finca")
     #llave_finca2 = relationship("Propiedad", back_populates="finca")
@@ -23,8 +26,10 @@ class Finca(Base):
         self.nombre = nombre
         self.fecha_creacion = fecha_creacion
         self.fecha_modificacion = fecha_modificacion
-
         self.total_porc_participacion = total_porc_participacion
+
+    #def __repr__(self):
+        #return f'"id":{self.id!r}, "direccion":{self.direccion!r},"nombre":{self.nombre!r},"total_porc_participacion":{self.total_porc_participacion!r}'
 
     def to_dict(self):
         return {'id': self.id,'direccion': self.direccion, 'nombre': self.nombre,'total_porc_participacion': self.total_porc_participacion}
