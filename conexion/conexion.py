@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine, MetaData, Table,select
 from recursos.re_encriptacion import *
 from sqlalchemy.orm import sessionmaker
-
+from flask import request
 def string_a_byte(palabra):#en string
     palabra = str.encode(palabra)
     return palabra
@@ -43,7 +43,9 @@ def set_password(pw):
     password_hash = pwhash.decode('utf-8') # decode the hash to prevent is encoded twice
     return password_hash
 
-def obtener_bd(user):
+def obtener_bd():
+    user = request.json["user"]#esto tiene q ir afuera de la funcion
+    print('usuario', user)
     engine = conexion('administradores')
     metadata = MetaData()
     nombrebd_valor = ""
